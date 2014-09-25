@@ -71,13 +71,13 @@ std::complex<double> selfAdmittanceRegion1And2(double a, double b, double w, dou
 
 // Calculates element i in the right hand side vector
 std::complex<double> rightHandSide(double a, double b, double w, double k_0, int i, long int maxModeNumber,
-	std::complex<double>* gamma_u_a, std::complex<double>* iZplusLookup)
+	std::complex<double>* gamma_u_a, std::complex<double>* iZminusLookup)
 {
 	double k_cut = PI / a;
 	std::complex<double> I(0.0, 1.0);
 	std::complex<double> gamma_u = gamma_u_a[0];
 
-	std::complex<double> RHS = k_cut / gamma_u*std::sqrt(2.0 * gamma_u*b / (I*k_0*ETA*a))*iZplusLookup[(i-1)*maxModeNumber];
+	std::complex<double> RHS = k_cut / gamma_u*std::sqrt(2.0 * gamma_u*b / (I*k_0*ETA*a))*iZminusLookup[(i-1)*maxModeNumber];
 
 	return RHS;
 }
@@ -251,7 +251,7 @@ double* SolveTJunction(double freq, double a, double b, double w, long int basis
 
 	for (int i = 0; i < N; i++)
 	{
-		matrixElement = rightHandSide(a, b, w, k_0, i + 1,maxModeNumber,gamma_u_a,iZplusTable);
+		matrixElement = rightHandSide(a, b, w, k_0, i + 1,maxModeNumber,gamma_u_a,iZminusTable);
 		*(RHS + i) = { std::real(matrixElement), std::imag(matrixElement) };
 		for (int j = i; j < N; j++)
 		{
@@ -346,10 +346,11 @@ int main(int argc, char *argv[])
 	for (double w = 0.0; w <= a; w += 0.05*a)
 	{
 		double* SParameters = SolveTJunction(f, a, b, w, basisFunctions, maxModeNumber);
-		printf("%3f \t %f \t %f \t %f \n", w/a, SParameters[0], SParameters[1], SParameters[2]);
+		printf("%f \t %f \t %f \t %f \n", w/a, SParameters[0], SParameters[1], SParameters[2]);
 	}
 	double end_time = (double)clock();
 	double time_lapsed = (end_time - start_time) / (double)CLOCKS_PER_SEC;
+
 	printf("\nTime elapsed: %f s\n\n", time_lapsed);
 
 	return 0;
