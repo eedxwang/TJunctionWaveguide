@@ -1,12 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctime>
-#include "SolveTJunction.h"
+#include "TJunction.h"
 
 // Calculates the S-parameters for a T-Junction waveguide for 21
 // different widths of the connecting aperture and prints them to
 // the terminal. Accepts two optional arguments: the number of 
 // basis functions and the number of waveguide modes to include
+
+/*int main()
+{
+	TJunction junction(5e9, 47.55e-3, 22.15e-3, 10e-3, 5, 100);
+	double* S = junction.SolveTJunction();
+	printf("S11: %f\nS22: %f\nS33: %f\n\n", S[0], S[1], S[2]);
+
+	return 0;
+}*/
+
 int main(int argc, char *argv[])
 {	
 	double a = 47.55e-3;
@@ -33,10 +43,12 @@ int main(int argc, char *argv[])
 
 	printf("\nw/a \t\t S11 \t\t S21 \t\t S31\n\n");
 
+	TJunction waveguide;
 	double start_time = (double)clock();
 	for (double w = 0.0; w <= a; w += 0.05*a)
 	{
-		double* SParameters = SolveTJunction(f, a, b, w, basisFunctions, maxModeNumber); // Calculate S-parameters
+		// Calculate S-parameters and print them
+		double* SParameters = waveguide.SolveTJunction(f, a, b, w, basisFunctions, maxModeNumber);
 		printf("%f \t %f \t %f \t %f \n", w/a, SParameters[0], SParameters[1], SParameters[2]);
 	}
 	double end_time = (double)clock();
