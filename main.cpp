@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctime>
 #include "TJunction.h"
+#include <omp.h>
 
 // Calculates the S-parameters for a T-Junction waveguide for 21
 // different widths of the connecting aperture and prints them to
@@ -45,11 +46,12 @@ int main(int argc, char *argv[])
 
 	TJunction waveguide;
 	double start_time = (double)clock();
-	for (double w = 0.0; w <= a; w += 0.05*a)
+	#pragma omp parallel for
+	for (int i = 0; i <= 20; i++)
 	{
 		// Calculate S-parameters and print them
-		double* SParameters = waveguide.SolveTJunction(f, a, b, w, basisFunctions, maxModeNumber);
-		printf("%f \t %f \t %f \t %f \n", w/a, SParameters[0], SParameters[1], SParameters[2]);
+		double* SParameters = waveguide.SolveTJunction(f, a, b, a/20.0*i, basisFunctions, maxModeNumber);
+		printf("%f \t %f \t %f \t %f \n", 1.0/20.0*i, SParameters[0], SParameters[1], SParameters[2]);
 	}
 	double end_time = (double)clock();
 	double time_lapsed = (end_time - start_time) / (double)CLOCKS_PER_SEC;
